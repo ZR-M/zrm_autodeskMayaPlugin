@@ -78,6 +78,8 @@ MTypeId zrm_railSpineNode::typeId(0x007F13FD); // TO DO
 
 MTypeId zrm_rigControllerNode::typeId(0x007F14FD); // TO DO
 
+MTypeId zrm_rigCtlNode::typeId(0x007F15FD); // TO DO
+
 
 
 

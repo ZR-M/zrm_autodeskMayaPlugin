@@ -209,7 +209,7 @@ MLL_EXPORT MStatus uninitializePlugin(MObject pluginObj)
 		std::cout << "Sucessfully Deregistered Plugin: " << pluginName << std::endl << endl;
 
 	}
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	return(status);
 }
 

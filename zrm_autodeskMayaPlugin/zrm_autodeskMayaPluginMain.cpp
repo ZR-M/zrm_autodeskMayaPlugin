@@ -1,21 +1,32 @@
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
-// PLUGIN GENERATES A PLUGIN FOR AUTODESK MAYA
+// PLUGIN GENERATES "CUSTOM RIG CONTROLLER NODE NAME" FOR AUTODESK MAYA DEVELOPED IN C++
 // 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // VENDOR:			Martin Zetter
-// DATE:			10.05.2021
+// DATE:			00.00.2021
 // VERSION:			0.0.1 BETA
 // MAYA:			2020.4 (compiled for Autodesk Maya 2020.4)
 // OS:				WIN 10 x64
 // BRIEF:			Node for creating a Custom Point on Curve Node "zrm_locatorNode"
-// NODE:			zrm_locatorNode
+// NODE:			zrm_nodeName
 // 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // 
-// DETAILS:			CUSTOM PLUGIN FOR AUTODESK MAYA
+// DETAILS:			"CUSTOM RIG CONTROLLER NODE NAME"
 // 
-// This node is setting up a CUSTOM PLUGIN FOR AUTODESK MAYA
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
+// - Description
 //
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //  
@@ -43,11 +54,21 @@
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ADD LINKER INPUT ADDITIONAL DEPENDENCIES
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#pragma comment(lib, "Foundation.lib")
+#pragma comment(lib, "OpenMaya.lib")
+#pragma comment(lib, "OpenMayaAnim.lib")
+#pragma comment(lib, "OpenMayaUI.lib")
+#pragma comment(lib, "OpenMayaRender.lib")
+#pragma comment(lib, "OpenGl32.lib")
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // INCLUDES
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #include "zrm_autodeskMayaPlugin.h"
-#include "zrm_autodeskMayaPluginOverride.h"
 
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
@@ -58,6 +79,12 @@
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #define MLL_EXPORT extern __declspec(dllexport)
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// NAMESPACE DEFINITION
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+using namespace std;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // VARIABLE DEFINITION FOR PLUGIN INFO
@@ -81,34 +108,20 @@ const char* devYear = "2021";
 // CONTACT INFORMATION:
 const char* contact = "martin.zetter@zrm.at";
 
-// MEL SCRIPT FILENAME:
-const char* melFileName = "zrm_locatorNode.mel";
-
-// MEL SCRIPT FUNCTION (run when load PLUGIN from Maya:
-const char* loadFunc = "zrm_autodeskMayaPluginLoad";
-
-// MEL SCRIPT FUNCTION (run when unload PLUGIN from Maya:
-const char* unloadFunc = "zrm_autodeskMayaPluginUnload";
-
-
-const MString pluginRegistrantId("zrm_autodeskMayaPlugin");
-
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FUNCTION TO INITIALIZE PLUGIN (Maya loads plugin: gets a new node)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MLL_EXPORT MStatus initializePlugin(MObject pluginObj)
 {
-
 	// TRACK STATUS OF MAYA FUNCTION CALLS
 	MStatus status;
 
 	// INSTANTIATE MFN-PLUGIN FUNCTION TO REGISTER PLUGIN
 	MFnPlugin pluginFn(pluginObj, vendorName, versionNumber, apiVersion, &status);
 
-	// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-	std::cout << "[ZRM]-Plugin: " << pluginName << ", Version: " << versionNumber /*<< ", Vendor: " << vendorName << ", Developed: " << devYear << ", Contact:" << contact*/ << std::endl << endl;
+	// LOGGING: PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
+	cout << "[ZRM]-Plugin: " << pluginName << ", Version: " << versionNumber /*<< ", Vendor: " << vendorName << ", Developed: " << devYear << ", Contact:" << contact*/ << endl << endl;
 
 	// REGISTER THE NODE (DO NOT HARDCODE TYPE-ID)
 	status = pluginFn.registerNode(pluginName,
@@ -131,15 +144,15 @@ MLL_EXPORT MStatus initializePlugin(MObject pluginObj)
 		return(status);
 
 	}
-	// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-	std::cout << "Sucessfully Registered Plugin: " << pluginName << std::endl;
+	// LOGGING: PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
+	cout << "Sucessfully Registered Plugin: " << pluginName << endl;
 
 
 	//REGISTER BOX HANDLE DRAW OVERRIDE
 	status = MHWRender::MDrawRegistry::registerDrawOverrideCreator(
 		zrm_autodeskMayaPlugin::kDrawDbClassification,
 		zrm_autodeskMayaPlugin::kPluginRegistrantId,
-		zrm_autodeskMayaPluginOverride::creator //Changed to DeawOverride instead of override only
+		zrm_autodeskMayaPluginDrawOverride::creator
 	);
 
 	if (!status)
@@ -149,12 +162,11 @@ MLL_EXPORT MStatus initializePlugin(MObject pluginObj)
 	}
 	else
 	{
-		// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-		std::cout << "Sucessfully Registered Locator Node Draw Override: " << pluginName << std::endl;
+		// LOGGING: PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
+		cout << "Sucessfully Registered Locator Node Draw Override: " << pluginName << endl;
 		return(status);
 	}
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	return status;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,12 +193,12 @@ MLL_EXPORT MStatus uninitializePlugin(MObject pluginObj)
 		return(status);
 
 		// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-		std::cout << "Failed To Deregister Locator Node Draw Override: " << pluginName << std::endl;
+		cout << "Failed To Deregister Locator Node Draw Override: " << pluginName << endl;
 	}
 	else
 	{
 		// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-		std::cout << "Sucessfully Deregistered Locator Node Draw Override: " << pluginName << std::endl;
+		cout << "Sucessfully Deregistered Locator Node Draw Override: " << pluginName << endl;
 	}
 	return(status);
 
@@ -199,29 +211,15 @@ MLL_EXPORT MStatus uninitializePlugin(MObject pluginObj)
 		MGlobal::displayError(MString("Failed To Deregister Node: " + status.errorString()));
 		return(status);
 
-		// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-		std::cout << "Unable To Deregister Plugin: " << pluginName << std::endl;
+		// LOGGING: PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
+		cout << "Unable To Deregister Plugin: " << pluginName << std::endl;
 
 	}
 	else
 	{
-		// PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
-		std::cout << "Sucessfully Deregistered Plugin: " << pluginName << std::endl << endl;
+		// LOGGING: PRINT PLUGIN INFORMATION TO MAYA OUTPUT WINDOW
+		cout << "Sucessfully Deregistered Plugin: " << pluginName << endl << endl;
 
 	}
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	return(status);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
